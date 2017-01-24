@@ -6,8 +6,6 @@ from subprocess import run
 import pexpect
 import os
 
-from create_database import create_database
-
 parser = ArgumentParser(
         description='''
         Scans through folders/GitHub repositories, makes database of keywords\n
@@ -68,5 +66,3 @@ for repo in g.iter_user_repos(user, type='user'):
             run(['git', 'clone', 'https://github.com/' + user + '/' + repo_name[0]])
 
 os.chdir(current_path)
-
-create_database(args.path)
