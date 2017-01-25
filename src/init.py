@@ -1,21 +1,27 @@
+#DODAC COMMITE'Y
 from argparse import ArgumentParser
 from zipfile import ZipFile
-from re import compile
 import xml.etree.ElementTree as xmlET
 import os
 import mysql.connector
-from argparse import ArgumentParser
 from getpass import getpass
+from subprocess import run
+
+from setup_database import setup_database
+from setup_procedures import setup_procedures
 
 def recursive_read(root, indent):
-    pass
-    #print(' '*indent + '%s' % root)
-    #if root.text is not None:
-    #    print(' '*indent + '%s' % (root.text))
-    #for elem in root.getchildren():
-    #    recursive_read(elem, indent+1)
+    if root.text is not None:
+        print(' '*indent + '%s' % (root.text))
+    for elem in root.getchildren():
+        recursive_read(elem, indent+1)
 
-#REFAKTORYZACJA
+#def recursive_read(root, cursor):
+#    if root.text is not None:
+#        cursor.callproc('add_node', root) #TBD
+#    for elem in root.getchildren():
+#        recursive_read(elem, indent+1)
+
 parser = ArgumentParser(
         description='''
         Scans through given path, makes keywords database of .xmind files\n
@@ -39,8 +45,22 @@ parser.add_argument('--connect', '-c', required=False,
         )
 
 parser.add_argument('--db', '-d', required=False,
-        help='''Name of the database''',
-        default='temp' #ZMIENIC NAZWE
+        help='''Name of the database [DEFAULT: mind_maps]''',
+        default='mind_maps')
+
+parser.add_argument('--table', '-t', required=False,
+        help='''Name of the table [DEFAULT: mind_maps_tree]''',
+        default='mind_maps_tree'
+        )
+
+parser.add_argument('--char', required=False,
+        help='''Character set for the database [DEFAULT: utf-8]''',
+        default='utf_8'
+        )
+
+parser.add_argument('--collation', required=False,
+        help='''Character set for the database [DEFAULT: utf8_unicode_ci]''',
+        default='utf8mb4_unicode_ci'
         )
 
 
@@ -55,17 +75,19 @@ database = mysql.connector.connect(
         host = args.connect
 )
 
-cursor = database.cursor()
-cursor.execute('CREATE DATABASE IF NOT EXISTS ' + args.db)
+cursor = setup_database(database)
+setup_procedures(cursor)
+
+#CREATE TREE ROOT
+cursor.execute('INSERT INTO ' + args.table + ''' (content, lft, rgt) VALUES ('root', 1, 2) ''')
 
 #SCRAPPING DATA
 
-pattern = compile(r'.*\.xmind')
-
 for subdir, dirs, files in os.walk(args.path):
     for file in files:
-        if pattern.fullmatch(file):
-            print(subdir + file)
+        if file.endswith('.xmind'):
             archive = ZipFile(subdir + r'/' + file, 'r')
             tree = xmlET.parse(archive.open('content.xml', 'r'))
+            #if run(['xmllint', '--noout', '--schema', tree]).returncode == 1:
+            #    print(subdir + file)
             recursive_read(tree.getroot(), 0)

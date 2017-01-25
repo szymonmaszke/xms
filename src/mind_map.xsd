@@ -26,6 +26,9 @@
 								</xs:complexType>
 							</xs:element>
 
+							<xs:any minOccurs="0" namespace='##any' processContents='skip' />
+
+							<!--
 							<xs:element name='relationships' minOccurs='0' maxOccurs='1'>
 								<xs:complexType>
 									<xs:sequence>
@@ -42,7 +45,7 @@
 													</xs:element>
 												</xs:sequence>
 
-												<!-- relationship attributes-->
+													relationship attributes
 												<xs:attribute name='end1' type='xs:string'/>
 												<xs:attribute name='end2' type='xs:string'/>
 												<xs:attribute name='id' type='xs:string'/>
@@ -54,6 +57,7 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+							-->
 						</xs:sequence>
 
 						<!-- sheet attributes-->
@@ -80,7 +84,7 @@
 		<xs:complexType>
 
 			<xs:sequence minOccurs="0" maxOccurs="unbounded">
-				<xs:element name='title'>
+				<xs:element name='title' minOccurs='0' maxOccurs='1'>
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base='xs:string'>
@@ -108,11 +112,12 @@
 					</xs:complexType>
 				</xs:element>
 
+				<!-- BOUNDARIES TBD
 				<xs:element name='boundaries' minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 
-							<xs:element name='boundary'>
+							<xs:element name='boundary' minOccurs="0">
 								<xs:complexType>
 									<xs:simpleContent>
 										<xs:extension base='xs:string'>
@@ -128,9 +133,12 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				-->
 
 				<!-- IMG ELEMENT FROM ANOTHER NAMESPACE (OVERHEAD MUCH AND NO POINT) -->
-				<xs:any minOccurs="0" namespace='##other' processContents='skip' />
+				<!-- BOUNDARIES AND OTHER NON CONTENT ELEMENTS -->
+
+				<xs:any minOccurs="0" maxOccurs="unbounded" namespace='##any' processContents='skip' />
 
 			</xs:sequence>
 
@@ -141,6 +149,7 @@
 			<xs:attribute name='timestamp' type='xs:string'/>
 			<xs:attribute name='version' type='xs:string'/>
 			<xs:attribute name='structure-class' type='xs:string'/>
+			<xs:attribute name='branch' type='xs:string'/>
 
 		</xs:complexType>
 	</xs:element>
