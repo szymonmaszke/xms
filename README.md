@@ -19,11 +19,12 @@ is still in alpha stage. All of it is described in README in src/
 
 	- Oracle's Python db-connector
 	[Installation: pip install mysql-connector-python or reference]
-	- Github
+	- Github account
+	- git
 
 # [OPTIONAL DEPENDENCIES]
 
 	- xmllint
 	(experimental -e flag in src/init/init.py validating .xmind files with schema)
-	- github3 Python API: https://github.com/sigmavirus24/github3.py
-	(Available via pip as well)
+	- github3 Python API: https://github.com/sigmavirus24/github3.py (available in pip)
+	(Needed to clone repositories containing mind maps from GitHub)
