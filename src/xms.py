@@ -10,6 +10,8 @@ parser = ArgumentParser(
         Before running this program you need to initialize database, check README.txt\n
         ''')
 
+parser.add_argument('keyword',
+        help='Keyword to be searched for')
 parser.add_argument('--user', '-u', required=True,
         help='''MySQL user''')
 
@@ -20,7 +22,7 @@ parser.add_argument('--connect', '-c', required=False,
 
 parser.add_argument('--database', '-d', required=False,
         help='''Name of the database [DEFAULT: mind_maps]''',
-        default='mind_maps')
+        default='xmindmaps')
 
 
 #OBTAING USER DATA AND OPTIONAL SSH DATA
@@ -34,3 +36,15 @@ database = mysql.connector.connect(
         host = args.connect,
         database = args.database
 )
+
+cursor = database.cursor()
+cursor.callproc('find_node', (args.keyword,))
+
+for result in cursor.stored_results():
+    limit = 0
+    for branch in result.fetchall():
+        if limit % 5 == 0:
+            print('%s' % branch)
+        else:
+            print('%s' % branch, end='->')
+        limit += 1
