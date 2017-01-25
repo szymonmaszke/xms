@@ -6,11 +6,10 @@ import os
 import mysql.connector
 from getpass import getpass
 from subprocess import run, Popen, PIPE
-
-#USUN TO USUN TO SLEEP
-from time import sleep
+import sys
 
 from setup_database import setup_database
+sys.path.append('../procedures')
 from setup_procedures import setup_procedures
 
 id = 1
@@ -105,8 +104,6 @@ def func():
                 if file.endswith('.xmind'):
                     archive = ZipFile(subdir + r'/' + file, 'r')
                     if args.experimental:
-                        sleep(1)
-                        print(subdir + r'/' + file, 'r')
                         run(['xmllint', '--noout', '--schema', './mind_map.xsd', archive.extract('content.xml')])
                     with archive.open('content.xml', 'r') as content:
                         tree = xmlET.parse(content)
