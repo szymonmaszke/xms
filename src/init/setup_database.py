@@ -7,26 +7,19 @@ def setup_database(database, args):
     cursor = database.cursor()
 
     cursor.execute('DROP DATABASE IF EXISTS ' + args.db)
-    database.commit()
 
     cursor.execute('CREATE DATABASE ' + args.db
             + ' CHARACTER SET ' + args.char + ' COLLATE ' + args.collation
             )
-    database.commit()
 
     cursor.execute('USE ' + args.db)
-    database.commit()
-
-    cursor.execute('DROP TABLE IF EXISTS ' + args.table)
-    database.commit()
 
     #MAXIMUM SIZE OF TABLE = 64 TERRABYTES, SHOULD BE ENOUGH...
-    cursor.execute('CREATE TABLE ' + args.table + ''' (
+    cursor.execute('''CREATE TABLE tree (
                         content_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         content TEXT NOT NULL,
                         lft BIGINT NOT NULL,
                         rgt BIGINT NOT NULL
-                    )ENGINE=InnoDB'''
+                    )ENGINE=''' + args.engine
                   )
-    database.commit()
     return cursor;

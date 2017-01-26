@@ -1,4 +1,5 @@
-#DODAC COMMITE'Y
+#!/usr/bin/env python
+
 from argparse import ArgumentParser
 import mysql.connector
 from getpass import getpass
