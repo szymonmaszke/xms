@@ -20,8 +20,8 @@ proc: BEGIN
 
 	START TRANSACTION;
 
-			UPDATE tree SET lft = CASE WHEN lft >  parent_rgt THEN lft + 2 ELSE lft END
-											,rgt = CASE WHEN rgt >= parent_rgt THEN rgt + 2 ELSE rgt END
+			UPDATE tree SET lft = CASE WHEN lft >  parent_rgt THEN lft + 2 ELSE lft END,
+											rgt = CASE WHEN rgt >= parent_rgt THEN rgt + 2 ELSE rgt END
 			WHERE rgt >= parent_rgt;
 
 			INSERT INTO tree (content, lft, rgt)
@@ -39,7 +39,8 @@ DROP PROCEDURE IF EXISTS find_node;
 //
 
 CREATE DEFINER = CURRENT_USER PROCEDURE find_node (
-		IN searched TEXT
+		IN searched TEXT,
+		IN off BIGINT
 )
 
 proc: BEGIN
@@ -47,7 +48,9 @@ proc: BEGIN
 	SELECT parent.content
 	FROM tree AS node,
 			 tree AS parent
-	WHERE node.lft BETWEEN parent.lft AND parent.rgt AND MATCH(node.content) AGAINST(searched IN BOOLEAN MODE)
+	WHERE node.lft BETWEEN parent.lft AND parent.rgt
+				AND node.content =
+				(SELECT content FROM tree WHERE match(content) AGAINST(searched IN BOOLEAN MODE) LIMIT 1 OFFSET off)
 	ORDER BY parent.lft;
 
 END //

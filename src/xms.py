@@ -22,7 +22,7 @@ parser.add_argument('--connect', '-c', required=False,
         )
 
 parser.add_argument('--database', '-d', required=False,
-        help='''Name of the database [DEFAULT: mind_maps]''',
+        help='''Name of the database [DEFAULT: xmindmaps]''',
         default='xmindmaps')
 
 
@@ -39,13 +39,16 @@ database = mysql.connector.connect(
 )
 
 cursor = database.cursor()
-cursor.callproc('find_node', (args.keyword,))
 
-for result in cursor.stored_results():
-    limit = 0
-    for branch in result.fetchall():
-        if limit % 5 == 0:
-            print('%s' % branch)
-        else:
-            print('%s' % branch, end='->')
-        limit += 1
+id = 0
+while True:
+    print()
+    cursor.callproc('find_node', [args.keyword, id])
+
+    for result in cursor.stored_results():
+        for indent, branch in enumerate(result.fetchall()[1:]):
+            print(' '*indent + '%s' %branch)
+    decision = input('\nShow next result?\n [Y] yes [OTHER] no ')
+    if decision.lower() != 'y':
+        break
+    id += 1

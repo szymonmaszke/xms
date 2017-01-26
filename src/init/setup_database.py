@@ -20,7 +20,7 @@ def setup_database(database, args):
                         content TEXT NOT NULL,
                         lft BIGINT NOT NULL,
                         rgt BIGINT NOT NULL,
-                        FULLTEXT (content)
+                        FULLTEXT(content)
                     )ENGINE=''' + args.engine
                   )
     return cursor;
