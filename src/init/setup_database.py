@@ -6,10 +6,10 @@ def setup_database(database, args):
     #CREATING DATABASE
     cursor = database.cursor()
 
-    #cursor.execute('DROP DATABASE IF EXISTS ' + args.db)
-    #database.commit()
+    cursor.execute('DROP DATABASE IF EXISTS ' + args.db)
+    database.commit()
 
-    cursor.execute('CREATE DATABASE IF NOT EXISTS ' + args.db
+    cursor.execute('CREATE DATABASE ' + args.db
             + ' CHARACTER SET ' + args.char + ' COLLATE ' + args.collation
             )
     database.commit()
