@@ -5,7 +5,6 @@ import xml.etree.ElementTree as xmlET
 import os
 import mysql.connector
 from getpass import getpass
-from subprocess import run, Popen, PIPE
 import sys
 import pexpect
 from time import sleep
@@ -92,14 +91,19 @@ try:
     #SETUP PROCEDURES
     database.commit()
 
-    process = pexpect.spawn('mysql -u ' + args.user + ' -p')
-    process.expect(r'(Enter.*)')
-    process.sendline(pwd)
-    process.expect(r'(.*MariaDB.*)')
-    process.sendline('source setup_procedures.sql')
-    process.expect(r'(.*MariaDB.*)')
-    process.sendline('quit')
-    process.interact()
+    #process = pexpect.spawn('mysql -u ' + args.user + ' -p')
+    #process.expect(r'(Enter.*)')
+    #process.sendline(pwd)
+    #process.expect(r'(.*MariaDB.*)')
+    #process.sendline('source ../procedures/setup_procedures.sql')
+    #process.interact()
+    with pexpect.spawn('mysql -u ' + args.user + ' -p') as process:
+        process.expect(r'(Enter.*)')
+        process.sendline(pwd)
+        process.expect(r'(.*MariaDB.*)')
+        process.sendline('source ../procedures/setup_procedures.sql')
+        sleep(1)
+        process.close()
 
     #SET UP ROOT
     cursor.execute('INSERT INTO ' + args.table + ''' (content, lft, rgt) VALUES ('root', 1, 2) ''')
