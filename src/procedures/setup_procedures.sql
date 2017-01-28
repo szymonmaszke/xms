@@ -13,7 +13,6 @@ proc: BEGIN
 
 	DECLARE parent_lft BIGINT DEFAULT NULL;
 	DECLARE parent_rgt BIGINT DEFAULT NULL;
-	DECLARE temp BIGINT DEFAULT NULL;
 
 	SELECT content_id, lft, rgt INTO parent_id, parent_lft, parent_rgt
 	FROM tree
@@ -28,11 +27,9 @@ proc: BEGIN
 			INSERT INTO tree (content, lft, rgt)
 					 VALUES (text_content, parent_rgt , parent_rgt + 1);
 
-			SELECT LAST_INSERT_ID() INTO temp;
+			SELECT LAST_INSERT_ID();
 
 	COMMIT;
-
-	SELECT temp AS child_id;
 
 END //
 DELIMITER ;
@@ -50,7 +47,7 @@ proc: BEGIN
 	SELECT parent.content
 	FROM tree AS node,
 			 tree AS parent
-	WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.content = searched
+	WHERE node.lft BETWEEN parent.lft AND parent.rgt AND MATCH(node.content) AGAINST(searched IN BOOLEAN MODE)
 	ORDER BY parent.lft;
 
 END //
