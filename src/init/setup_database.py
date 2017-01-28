@@ -19,7 +19,8 @@ def setup_database(database, args):
                         content_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         content TEXT NOT NULL,
                         lft BIGINT NOT NULL,
-                        rgt BIGINT NOT NULL
+                        rgt BIGINT NOT NULL,
+                        FULLTEXT (content)
                     )ENGINE=''' + args.engine
                   )
     return cursor;
