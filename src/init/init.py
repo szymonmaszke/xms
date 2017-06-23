@@ -9,19 +9,33 @@ from time import sleep
 from subprocess import run
 from getpass import getpass
 from os import walk
+from copy import deepcopy
 
 from setup_database import setup_database
 
 #RECURSIVE READ OF MIND MAPS
 
-def recursive_read(root, cursor, database):
-    global MAP_ID
-    if root.text is not None:
-        cursor.callproc('add_node', (MAP_ID, root.text))[0]
-        print('Added branch: ' + str(MAP_ID) , end='\r')
+MAP_ID = 1
+
+xmind_namespace = 'urn:xmind:xmap:xmlns:content:2.0'
+
+def recursive_read(root, id):
+    if root.tag == ('{' + xmind_namespace + '}' + 'topic'):
+        cursor.callproc('add_node',
+                (id, root.find('xmind:title',namespaces={'xmind': xmind_namespace}).text))
+
+        global MAP_ID
+        print(' '*id + '%s' % (root.find('xmind:title',namespaces={'xmind':xmind_namespace}).text))
+        # print('Added branch: ' + str(MAP_ID) , end='\r')
         MAP_ID += 1
-    for elem in root.getchildren():
-        recursive_read(elem, cursor, database)
+
+        children = root.find('xmind:children', namespaces={'xmind': xmind_namespace})
+        if children is not None:
+            for elem in children:
+                recursive_read(elem, id+1)
+    else:
+        for elem in root:
+            recursive_read(elem, id)
 
 
 #ARGUMENT PARSING AND MAIN PROGRAM LOGIC
@@ -76,7 +90,7 @@ parser.add_argument('--experimental', required=False, action='store_true',
     IMPORTANT: Slows down the program significantly\n''',
     default=False)
 
-#OBTAING USER DATA AND OPTIONAL SSH DATA
+#OBTAIN USER DATA AND OPTIONAL SSH DATA
 args = parser.parse_args()
 pwd = getpass('MySQL password: ')
 
@@ -105,16 +119,16 @@ try:
         process.sendline('source ../procedures/setup_procedures.sql')
         #BUDUJEMY NAPIECIE
         sleep(1)
-        #process.interact()
         #ZBUDOWANO NAPIECIE
         process.close()
     print("Procedures loaded correctly\n")
 
     #SET UP ROOT
-    cursor.execute('''INSERT INTO tree (content, lft, rgt) VALUES ('root', 1, 2) ''')
+    cursor.execute('''INSERT INTO tree (content, lft, rgt) VALUES ('root', 1,
+            2) ''')
 
     for subdir, dirs, files in walk(args.path):
-        for i, file in enumerate(files):
+        for file in files:
             if file.endswith('.xmind'):
                 archive = ZipFile(subdir + r'/' + file, 'r')
 
@@ -126,10 +140,11 @@ try:
 
                 #SCANNING MIND MAPS
                 with archive.open('content.xml', 'r') as content:
-                    MAP_ID = 1
                     print('Adding branches from file ' + file + ' to database')
                     tree = xmlET.parse(content)
-                    recursive_read(tree.getroot(), cursor, database)
+                    MAP_ID = 1
+                    root = tree.getroot()
+                    recursive_read(root, 1)
                     print('Branches from file ' + file + ' added successfully\n')
 
 except Exception as e:
