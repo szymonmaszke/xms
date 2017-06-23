@@ -1,6 +1,6 @@
-import mysql.connector
-
 __all__ = ['setup_database']
+
+import mysql.connector
 
 def setup_database(database, args):
     #CREATING DATABASE

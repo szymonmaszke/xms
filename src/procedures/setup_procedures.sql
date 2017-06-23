@@ -9,25 +9,16 @@ CREATE DEFINER = CURRENT_USER PROCEDURE add_node (
 		IN text_content TEXT
 )
 
-proc: BEGIN
+BEGIN
 
-	DECLARE parent_lft BIGINT DEFAULT NULL;
-	DECLARE parent_rgt BIGINT DEFAULT NULL;
-
-	SELECT content_id, lft, rgt INTO parent_id, parent_lft, parent_rgt
-	FROM tree
-	WHERE content_id = parent_id;
+  SELECT @new_right := rgt FROM tree WHERE content_id = parent_id;
 
 	START TRANSACTION;
-
-			UPDATE tree SET lft = CASE WHEN lft >  parent_rgt THEN lft + 2 ELSE lft END,
-											rgt = CASE WHEN rgt >= parent_rgt THEN rgt + 2 ELSE rgt END
-			WHERE rgt >= parent_rgt;
+      UPDATE tree SET rgt = rgt + 2 WHERE rgt >= @new_right;
+      UPDATE tree SET lft = lft + 2 WHERE lft >= @new_right;
 
 			INSERT INTO tree (content, lft, rgt)
-					 VALUES (text_content, parent_rgt , parent_rgt + 1);
-
-			SELECT LAST_INSERT_ID();
+					 VALUES (text_content, @new_right , @new_right + 1);
 
 	COMMIT;
 
@@ -49,8 +40,8 @@ proc: BEGIN
 	FROM tree AS node,
 			 tree AS parent
 	WHERE node.lft BETWEEN parent.lft AND parent.rgt
-				AND node.content =
-				(SELECT content FROM tree WHERE match(content) AGAINST(searched IN BOOLEAN MODE) LIMIT 1 OFFSET off)
+				AND node.content = searched
+				/* (SELECT content FROM tree WHERE match(content) AGAINST(searched IN BOOLEAN MODE) LIMIT 1 OFFSET off) */
 	ORDER BY parent.lft;
 
 END //
