@@ -16,23 +16,25 @@ from setup_database import setup_database
 #RECURSIVE READ OF MIND MAPS
 
 MAP_ID = 1
-
 xmind_namespace = 'urn:xmind:xmap:xmlns:content:2.0'
 
+#PARSE AND ADD MIND MAP TO DATABASE
 def recursive_read(root, id):
     if root.tag == ('{' + xmind_namespace + '}' + 'topic'):
-        cursor.callproc('add_node',
-                (id, root.find('xmind:title',namespaces={'xmind': xmind_namespace}).text))
+        inserted_id = cursor.callproc(
+                'add_node',
+                (id, root.find('xmind:title',namespaces={'xmind':xmind_namespace}).text,
+                0 #PLACEHOLDER FOR INSERTED_ID
+                ))[2]
 
         global MAP_ID
-        print(' '*id + '%s' % (root.find('xmind:title',namespaces={'xmind':xmind_namespace}).text))
-        # print('Added branch: ' + str(MAP_ID) , end='\r')
+        print('Added branch: ' + str(MAP_ID) , end='\r')
         MAP_ID += 1
 
         children = root.find('xmind:children', namespaces={'xmind': xmind_namespace})
         if children is not None:
             for elem in children:
-                recursive_read(elem, id+1)
+                recursive_read(elem, inserted_id)
     else:
         for elem in root:
             recursive_read(elem, id)
