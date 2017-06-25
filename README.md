@@ -3,26 +3,10 @@ XMind-Searcher
 
 # [About]
 
-Processes XMind mind maps and translates them into MySQL's
-hierarchical database.
+CLI XMind maps searcher!
 
-Afterwards xms.py allows searching through the database.
-Query is a keyword, program returns exact branch where the
-searched query is located (path starting from mind map name).
-
-BUGGED:
-Adding nodes, not displaying found keywords correctly
-
-# Warning
-
-Project is not finished, not working properly
-
-## [TO DO]
-
-- Fix node additions
-- Add automatic installation (and pip package)
-- More output options
-- Fix and check experimental XSD validation
+You can search your every note ever with one short command:
+python xms.py <keyword>
 
 ## [REQUIRED DEPENDENCIES]
 
@@ -31,13 +15,8 @@ Project is not finished, not working properly
 
 	- Oracle's Python db-connector
 	[Installation: pip install mysql-connector-python or reference]
-	- Github account
-	- git
 
 ## [OPTIONAL DEPENDENCIES]
 
 	- xmllint
 	(experimental -e flag in src/init/init.py validating .xmind files with schema)
-	- github3 Python API: https://github.com/sigmavirus24/github3.py (available in pip)
-	(Needed to clone repositories containing mind maps from GitHub)
-
