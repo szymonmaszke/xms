@@ -21,7 +21,7 @@ def setup_database(database, args):
     #MAXIMUM SIZE OF TABLE = 64 TERRABYTES, SHOULD BE ENOUGH...
     cursor.execute('''CREATE TABLE tree (
                         content_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                        content TEXT NOT NULL,
+                        content TEXT,
                         lft BIGINT NOT NULL,
                         rgt BIGINT NOT NULL,
                         FULLTEXT(content)
@@ -36,7 +36,8 @@ def setup_procedures(user, password, database):
         process.expect(r'(.*)')
         process.sendline('USE ' + database)
         process.expect(r'(.*)')
-        process.sendline('source ../procedures/setup_procedures.sql')
+        #CHANGE LINE BELOW TO ../procedures/setup_procedures.sql FOR CUSTOM INSTALLATION FROM init.py
+        process.sendline('source ./src/procedures/setup_procedures.sql')
         #WORKAROUND, ALLOWS MYSQL TO LOAD
         time.sleep(1)
         process.close()

@@ -16,12 +16,6 @@ parser = argparse.ArgumentParser(
     !!! Run it only once before using xms program !!!\n
     ''')
 
-parser.add_argument('--user', '-u', required=True,
-    help='''MySQL user''')
-
-parser.add_argument('--path', '-p', required=True,
-    help='''Directory where XMind notes are located''')
-
 parser.add_argument('--connect', '-c', required=False,
     help='''Placement of created database [DEFAULT: localhost]''',
     default='localhost')
@@ -42,46 +36,58 @@ parser.add_argument('--engine', '-e', required=False,
     help='''Engine used for database creation [DEFAULT: InnoDB]''',
     default='InnoDB')
 
-parser.add_argument('--store_credentials', '-s', required=False, action='store_true',
-    help='''Do not store username and password in secured file in $HOME/.xms/config\n
-    WARNING! if this argument is specified as False, xms searcher will ask you\n
-    to provide MySQL credentials each time it's run!
-    ''',
-    default=True)
-
 parser.add_argument('--experimental', required=False, action='store_true',
     help='''Turns on experimental functions [Mind Maps XSD validation]\n
     IMPORTANT: Slows down the program significantly\n''',
     default=False)
 
+parser.add_argument('--docker', required=False, action='store_true',
+    help='''Shows information about dependencies if app is not run from docker
+    container''',
+    default=False)
+
 #OBTAIN USER DATA
 args = parser.parse_args()
+
+if not args.docker:
+    print('IMPORTANT: This software needs three specified dependencies (listed in dependencies.txt). Make sure you have them!')
+    print('IMPORTANT: You should follow system-specific installation instructions for each of them.\n')
+
+print('For custom installation check src/init/init.py\n')
+
+print('For this app to work I need your MySQL credentials.')
+print('For lookup to work they have to be saved onto your system in encrypted form.')
+print("You may specify otherwise below, but you'll have to provide those informations each time the searcher is ran!\n")
+
+store_credentials = input('Store credentials?\n[Y] yes [ANY] no ')
+
+username = input('\nMySQL username: ')
 pwd = getpass('MySQL password: ')
-if args.store_credentials:
-    print('\nSaving user credentials for app use...')
-    init_utilities.store_data(args.user, pwd, directory='~/.xms/', file='data')
-    print('Successfully saved')
-print('\nSaving database and connection data for app use...')
-init_utilities.store_data(args.db, args.connect, directory='~/.xms/', file='config')
-print('Successfully saved\n')
+#ADD BETTER DATA VALIDATION
+while(True):
+    path = os.path.expanduser(input('\nPath to your xmind directory (specify fullpath): '))
+    if os.path.isdir(path):
+        break;
+    print('\nCannot find this directory on your system. Are you sure about the input?')
+    print('Please provide correct path (fullpath/localpaths supported)')
 
 #CREATING DATABASE
 try:
     database = db.connect(
-            user = args.user,
+            user = username,
             password = pwd,
             host = args.connect,
             autocommit=True
     )
 
     #SETUP DATABASE
-    print("Creating database...")
+    print("\nCreating database...")
     cursor = init_utilities.setup_database(database, args)
     print("Database created correctly")
 
     #SETUP PROCEDURES
     print("Loading procedures...")
-    init_utilities.setup_procedures(args.user, pwd, args.db)
+    init_utilities.setup_procedures(username, pwd, args.db)
     print("Procedures loaded correctly\n")
 
     #SET UP ROOT
@@ -89,13 +95,16 @@ try:
             2) ''')
 
     #PARSE MIND MAPS FROM GIVEN DIRECTORY
-    parse_mind_maps(args.path, cursor, experimental=args.experimental)
+    parse_mind_maps(path, cursor, experimental=args.experimental)
 
-    #STORE CREDENTIALS
-    # if args.store_credentials:
-    #     print('Saving user configuration for app use...')
-    #     store_data(args.user, pwd, args.db, args.connect, directory='~/.xms', file='config')
-    #     print('Successfully saved')
+    if store_credentials.lower() == 'y':
+        print('Saving user credentials for searcher use...')
+        init_utilities.store_data(username, pwd, directory='~/.xms/', file='data')
+        print('Successfully saved\n')
+
+    print('Saving database and connection data for app use...')
+    init_utilities.store_data(args.db, args.connect, directory='~/.xms/', file='config')
+    print('Successfully saved\n')
 
 except Exception as e:
     print(e)
