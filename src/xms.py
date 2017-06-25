@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-from argparse import ArgumentParser
+import argparse
 import mysql.connector
-from getpass import getpass
 
-parser = ArgumentParser(
+#IMPORT MENU AND READING CREDENTIALS, DATABASE DATA
+import xms_utilities
+
+parser = argparse.ArgumentParser(
         description='''
         Scans through xmind notes and returns path and exact branch to your query\n\n
         [IMPORTANT]\n\n
@@ -13,42 +15,32 @@ parser = ArgumentParser(
 
 parser.add_argument('keyword',
         help='Keyword to be searched for')
-parser.add_argument('--user', '-u', required=True,
-        help='''MySQL user''')
 
-parser.add_argument('--connect', '-c', required=False,
-        help='''Placement of created database [DEFAULT: localhost]''',
-        default='localhost'
-        )
-
-parser.add_argument('--database', '-d', required=False,
-        help='''Name of the database [DEFAULT: xmindmaps]''',
-        default='xmindmaps')
-
-
-#OBTAING USER DATA AND OPTIONAL SSH DATA
 args = parser.parse_args()
-pwd = getpass('MySQL password: ')
+directory = '~/.xms/'
+username, pwd = xms_utilities.receive_data(
+        directory='~/.xms/',filename='data',
+        error_message='Error occured when reading file, requesting credentials...',
+        not_found_message='File not found, requesting credentials...',
+        first_prompt_message='MySQL username: ',
+        second_prompt_message='Password: '
+        )
+db, connection = xms_utilities.receive_data(
+        directory='~/.xms/',filename='config',
+        error_message='Error occured when reading file, requesting database and connection information...',
+        not_found_message='File not found, requesting database and connection information...',
+        first_prompt_message='Name of database: ',
+        second_prompt_message='Location of database [e.g. localhost]: '
+        )
 
 #CONECTING TO DATABASE
 database = mysql.connector.connect(
-        user = args.user,
+        user = username,
         password = pwd,
-        host = args.connect,
-        database = args.database
+        host = connection,
+        database = db
 )
 
 cursor = database.cursor()
 
-id = 0
-while True:
-    print()
-    cursor.callproc('find_node', [args.keyword, id])
-
-    for result in cursor.stored_results():
-        for indent, branch in enumerate(result.fetchall()[1:]):
-            print(' '*indent + '%s' %branch)
-    decision = input('\nShow next result?\n [Y] yes [OTHER] no ')
-    if decision.lower() != 'y':
-        break
-    id += 1
+xms_utilities.find_keyword(cursor, args.keyword)
