@@ -1,9 +1,6 @@
 XMind-Searcher
 =============
-
-# [About]
-
-CLI XMind maps searcher!
+CLI XMind mind maps searcher!
 
 Parses all of your mindmaps (local or from github!), creates database and allows
 you to search through them using keywords via:
