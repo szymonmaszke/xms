@@ -6,13 +6,17 @@ XMind-Searcher
 CLI XMind maps searcher!
 
 Parses all of your mindmaps (local or from github!), creates database and allows
-you to search through them using:
+you to search through them using keywords via:
 
 ```bash
 xms <keyword>
 ```
 
+
 # [Demo]
+
+First line is the mind map, next indented sentences are consecutive branches leading
+to sought keyword
 
 ![gif](https://github.com/vyzyv/xmind_searcher/raw/master/xms.gif)
 
