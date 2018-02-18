@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 """Utilities for database creation, like verbose printing."""
 
+import base64
+import os
 import sys
 
-
 __all__ = ['print_verbose', 'store_data']
+
 
 def print_verbose(message: str, verbose: bool):
     """Print message to stderr if verbose flag is set.

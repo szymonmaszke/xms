@@ -114,7 +114,7 @@ try:
                         args.verbose)
     utils.store_data(
         args.database, args.connect, directory='~/.xms/', file='config')
-    utils.print_verbose('Successfully saved\n', args.verbose)
+    utils.print_verbose('Successfully saved', args.verbose)
 
 finally:
     connection.close()
