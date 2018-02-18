@@ -74,23 +74,20 @@ def find_keyword(cursor, keyword: str):
 
 
 def receive_data(
-        directory: str,
-        filename: str,
+        path: str,
         error_message: str,
         not_found_message: str,
         first_prompt_message: str,
         second_prompt_message: str,
 ):
-    """Returns data from file in specified directory.
+    """Return data from file in specified directory.
 
     Prints error messages if directory was not found or other errors occured
 
     Parameters
     ----------
-    directory : str
-           Directory containing file with data
-    filename : str
-           Name of the file containing data
+    path: str
+           Path pointing to secret
     error_message : str
            Error string to print in case of exception
     not_found_message : str
@@ -108,11 +105,11 @@ def receive_data(
          List containing decrypted/provided data, e.g. [username, password]
 
     """
-
-    secret = pathlib.Path(os.path.expanduser(directory + filename))
+    secret = pathlib.Path(os.path.expanduser(path))
+    # If secret file exists read it
     if secret:
         try:
-            with open(os.path.expanduser(directory + filename), 'r') as file:
+            with open(os.path.expanduser(path), 'r') as file:
                 return [(base64.b64decode(data)).decode('utf-8')
                         for data in file.read().splitlines()]
         # If something went wrong prompt the user to specify their secret
@@ -121,6 +118,7 @@ def receive_data(
             data1 = input(first_prompt_message)
             data2 = getpass(second_prompt_message)
             return [data1, data2]
+    # If secret file not found prompt user to input their secret
     else:
         print(not_found_message)
         data1 = input(first_prompt_message)

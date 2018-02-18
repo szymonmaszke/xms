@@ -3,6 +3,7 @@
 """Performs search through hierarchical database of mind maps."""
 
 import argparse
+import os
 
 import mysql.connector
 
@@ -15,32 +16,51 @@ parser = argparse.ArgumentParser(description='''
         Before running this program you need to initialize database, check README.txt\n
         ''')
 
-parser.add_argument('keyword', help='Keyword to be searched for')
+parser.add_argument('keyword', help='keyword to search for')
+parser.add_argument(
+    '--color',
+    '-c',
+    required=False,
+    action='store_true',
+    help='''colorize the output? [DEFAULT: false]''',
+    default=True)
 
+parser.add_argument(
+    '--secret',
+    '-s',
+    required=False,
+    help='''directory containing secret data [DEFAULT: ~/.xms]''',
+    default='~/.xms')
 args = parser.parse_args()
-directory = '~/.xms/'
-username, pwd = xms_utilities.receive_data(
-    directory='~/.xms/',
-    filename='data',
+
+# OBTAIN USER DATA
+username, password = xms_utilities.receive_data(
+    path=os.path.join(args.secret, 'data'),
     error_message='Error occured when reading file, requesting credentials...',
     not_found_message='File not found, requesting credentials...',
     first_prompt_message='MySQL username: ',
     second_prompt_message='Password: ')
 
-db, connection = xms_utilities.receive_data(
-    directory='~/.xms/',
-    filename='config',
-    error_message=
-    'Error occured when reading file, requesting database and connection information...',
-    not_found_message=
-    'File not found, requesting database and connection information...',
+# OBTAIN DATABASE DATA
+database, connection = xms_utilities.receive_data(
+    path=os.path.join(args.secret, 'config'),
+    error_message='Error occured when reading file,'
+    'requesting database and connection information...',
+    not_found_message='File not found, '
+    'requesting database and connection information...',
     first_prompt_message='Name of database: ',
-    second_prompt_message='Location of database [e.g. localhost]: ')
+    second_prompt_message='IP of database [e.g. localhost]: ')
 
 # CONECTING TO DATABASE
-database = mysql.connector.connect(
-    user=username, password=pwd, host=connection, database=db)
 
-cursor = database.cursor()
+connection = mysql.connector.connect(
+    user=username,
+    password=password,
+    host=connection,
+    database=database,
+)
 
+cursor = connection.cursor()
+
+# FIND KEYWORD
 xms_utilities.find_keyword(cursor, args.keyword)
