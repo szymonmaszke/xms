@@ -7,14 +7,15 @@ __all__ = ['menu', 'receive_data']
 import base64
 import os
 import pathlib
+import subprocess
 from getpass import getpass
 
 
 def find_keyword(cursor, keyword: str):
-    """Finds sought keyword in hierarchical database.
+    """Find sought keyword in hierarchical database.
 
-    Acts like a menu for finding keywords. Runs until no results can be found or
-    user stopped the program using specified key (other than 'y').
+    Acts like a menu for finding keywords. Runs until no results can be found
+    or user stopped the program using specified key (other than 'y').
 
     Parameters
     ----------
@@ -24,10 +25,21 @@ def find_keyword(cursor, keyword: str):
            Saught for keyword
 
     """
-    BEST_RESULT_ID = 0
-    while True:
-        cursor.callproc('find_node', [keyword, BEST_RESULT_ID])
 
+    def _display_results(cursor):
+        """Display branches for found keyword.
+
+        Parameters
+        ----------
+        cursor : MySQL connector object
+               Cursor allowing execution queries to MySQL database
+
+        Returns
+        -------
+        str
+             String containing path pointing to mind map
+
+        """
         for results in cursor.stored_results():
             # [1:] Does not fetch the root of hierarchical database
             result = results.fetchall()[1:]
@@ -37,12 +49,25 @@ def find_keyword(cursor, keyword: str):
                 return
             # Display indent based branches containing sought keyword
             for indent, branch in enumerate(result):
-                print(' ' * indent + '{}'.format(branch))
+                print(' ' * indent + '{}'.format(branch[0]))
 
-        # open_decision = input('\nOpen mind map?\n [Y] yes [ANY] quit\n')
-        # OTWIERANIE MAPY MYŚLI W BACKGROUNDZIE, ASYNCHRONICZNIE?
-        next_decision = input('\nShow next result?\n [Y] yes [ANY] quit\n')
-        if next_decision.lower() != 'y':
+            return result[0][0]
+
+    BEST_RESULT_ID = 0
+    while True:
+        cursor.callproc('find_node', [keyword, BEST_RESULT_ID])
+        result = _display_results(cursor)
+
+        # Open mind map?
+        open_decision = input('\nOpen mind map? \n[Y] yes [ANY] no\n')
+        if open_decision.lower() == 'y':
+            subprocess.call(
+                "XMind '{}' >/dev/null 2>&1 &".format(result), shell=True)
+
+        # Continue to next mind map?
+        next_branch_decision = input(
+            '\nShow next result? \n[Y] yes [ANY] no\n')
+        if next_branch_decision != 'y':
             return
         print()
         BEST_RESULT_ID += 1

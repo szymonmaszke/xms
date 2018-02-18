@@ -38,7 +38,7 @@ def _recursive_parse(root, cursor, parent_id: int):
     if root.tag == ('{' + XMIND_NAMESPACE + '}' + 'topic'):
         root_text = root.find(
             'xmind:title', namespaces={
-                'xmind': XMIND_NAMESPACE
+                'xmind': XMIND_NAMESPACE,
             }).text
 
         inserted_id = cursor.callproc(
@@ -61,14 +61,14 @@ def _recursive_parse(root, cursor, parent_id: int):
             for elem in children:
                 _recursive_parse(elem, cursor, inserted_id)
 
-    # BRANCH WITHOUT TEXTUAL INFORMATIONS, PROCESS TO NEXT ELEMENTS
+    # BRANCH WITHOUT TEXTUAL CONTENT, PROCESS NEXT ELEMENTS
     else:
         for elem in root:
             _recursive_parse(elem, cursor, parent_id)
 
 
 def parse_mind_maps(path: str, cursor, verbose: bool):
-    """Adds mind maps to database using cursor and recursive XML parsing.
+    """Add mind maps to database using cursor and recursive XML parsing.
 
     Parameters
     ----------
@@ -80,12 +80,13 @@ def parse_mind_maps(path: str, cursor, verbose: bool):
            <argument description>
 
     """
-    for subdir, _, files in os.walk(path):
+    for dirpath, _, files in os.walk(path):
         for file in files:
             # XMind mind map's are .zip files with various files, open them as
             # zip
             if file.endswith('.xmind'):
-                archive = ZipFile(subdir + r'/' + file, 'r')
+                path = os.path.join(dirpath, file)
+                archive = ZipFile(path, 'r')
 
                 # Open textual content of mind map .zip archive
                 with archive.open('content.xml', 'r') as content:
@@ -98,7 +99,15 @@ def parse_mind_maps(path: str, cursor, verbose: bool):
                     BRANCH_ID = 1
 
                     root = ET.parse(content).getroot()
-                    _recursive_parse(root, cursor, 1)
+                    inserted_id = cursor.callproc(
+                        'add_node',  # name of procedure to be called
+                        (
+                            1,  # parent branch id
+                            path,  # text in branch to be inserted
+                            0,  # placeholder value for inserted_id variable
+                        ))[2]
+
+                    _recursive_parse(root, cursor, inserted_id)
 
                     utils.print_verbose(
                         'Successfully added {} branches from file {} \n'
