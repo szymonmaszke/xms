@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """xms_utilities."""
 
-__all__ = ['menu', 'receive_data']
+__all__ = ['find_keyword', 'receive_data']
 
 import base64
 import os
@@ -40,23 +40,26 @@ def find_keyword(cursor, keyword: str):
              String containing path pointing to mind map
 
         """
-        for results in cursor.stored_results():
-            # [1:] Does not fetch the root of hierarchical database
-            result = results.fetchall()[1:]
-            # All of the results were displayed
-            if not result:
-                print('No results found\n')
-                return
+        # [1:] Does not fetch the root of hierarchical database
+        result = list(cursor.stored_results())[0].fetchall()[1:]
+
+        if result:
             # Display indent based branches containing sought keyword
             for indent, branch in enumerate(result):
                 print(' ' * indent + '{}'.format(branch[0]))
-
             return result[0][0]
 
+        print('No results found, exiting\n')
+        return None
+
+    # Fetch the best result from database, than the second one, third one
+    # afterwards etc.
     BEST_RESULT_ID = 0
     while True:
         cursor.callproc('find_node', [keyword, BEST_RESULT_ID])
         result = _display_results(cursor)
+        if result is None:
+            return
 
         # Open mind map?
         open_decision = input('\nOpen mind map? \n[Y] yes [ANY] no\n')
