@@ -10,8 +10,10 @@ import pathlib
 import subprocess
 from getpass import getpass
 
+from termcolor import colored
 
-def find_keyword(cursor, keyword: str):
+
+def find_keyword(cursor, keyword: str, color: bool):
     """Find sought keyword in hierarchical database.
 
     Acts like a menu for finding keywords. Runs until no results can be found
@@ -49,7 +51,6 @@ def find_keyword(cursor, keyword: str):
                 print(' ' * indent + '{}'.format(branch[0]))
             return result[0][0]
 
-        print('No results found, exiting\n')
         return None
 
     # Fetch the best result from database, than the second one, third one
@@ -59,17 +60,20 @@ def find_keyword(cursor, keyword: str):
         cursor.callproc('find_node', [keyword, BEST_RESULT_ID])
         result = _display_results(cursor)
         if result is None:
+            text = 'No results found, exiting'
+            print(colored(text, 'red') if color else text)
             return
 
         # Open mind map?
-        open_decision = input('\nOpen mind map? \n[Y] yes [ANY] no\n')
+        text = '\nOpen mind map? \n[Y] yes [ANY] no '
+        open_decision = input(colored(text, 'blue') if color else text)
         if open_decision.lower() == 'y':
             subprocess.call(
                 "XMind '{}' >/dev/null 2>&1 &".format(result), shell=True)
 
         # Continue to next mind map?
-        next_branch_decision = input(
-            '\nShow next result? \n[Y] yes [ANY] no\n')
+        text = '\nShow next result? \n[Y] yes [ANY] no '
+        next_branch_decision = input(colored(text, 'green') if color else text)
         if next_branch_decision != 'y':
             return
         print()

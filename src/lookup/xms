@@ -23,7 +23,7 @@ parser.add_argument(
     required=False,
     action='store_true',
     help='''colorize the output? [DEFAULT: false]''',
-    default=True)
+    default=False)
 
 parser.add_argument(
     '--secret',
@@ -63,4 +63,4 @@ connection = mysql.connector.connect(
 cursor = connection.cursor()
 
 # FIND KEYWORD
-xms_utilities.find_keyword(cursor, args.keyword)
+xms_utilities.find_keyword(cursor, args.keyword, args.color)
