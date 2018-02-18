@@ -13,7 +13,7 @@ from getpass import getpass
 from termcolor import colored
 
 
-def find_keyword(cursor, keyword: str, color: bool):
+def find_keyword(cursor, keyword: str, color: bool, keep: bool):
     """Find sought keyword in hierarchical database.
 
     Acts like a menu for finding keywords. Runs until no results can be found
@@ -76,7 +76,10 @@ def find_keyword(cursor, keyword: str, color: bool):
         next_branch_decision = input(colored(text, 'green') if color else text)
         if next_branch_decision != 'y':
             return
+
         print()
+        if not keep:
+            os.system('cls' if os.name == 'nt' else 'clear')
         BEST_RESULT_ID += 1
 
 
