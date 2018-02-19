@@ -24,6 +24,8 @@ To display help use standard ***-h*** parameter.
 
 # Demo
 
+You can easily find the keyword and open mind map containing it as shown below:
+
 ![gif](https://github.com/vyzyv/xmind_searcher/raw/master/xms.gif)
 
 - First line: path to the mind map with found keyword
