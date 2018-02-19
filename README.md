@@ -10,7 +10,7 @@ xms
 
 | **Language** | **MySQL** | **Style** |
 |--------------------|----------------------------|------------------|
-| ![Language](https://img.shields.io/badge/python-3.6-brightgreen.svg) |![Database](https://img.shields.io/badge/MariaDB-10.1.31-blue.svg) |
+| ![Language](https://img.shields.io/badge/python-3.6-brightgreen.svg) |![Database](https://img.shields.io/badge/MariaDB-10.1.31-blue.svg) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6f99a332ab8a47499323ae9b88ddb0db)](https://www.codacy.com/app/vyz/XMind-Searcher?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=vyzyv/XMind-Searcher&amp;utm_campaign=Badge_Grade) |
 
 Command line mind map searcher.
 
