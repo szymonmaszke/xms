@@ -3,7 +3,7 @@ xms
 
 <p align="center">
     <a href="https://upload.wikimedia.org/wikipedia/commons/6/64/XMind_Logo.png">
-        <img height=85 src="https://upload.wikimedia.org/wikipedia/commons/6/64/XMind_Logo.png">
+        <img height=160 src="https://upload.wikimedia.org/wikipedia/commons/6/64/XMind_Logo.png">
     </a>
 </p>
 
