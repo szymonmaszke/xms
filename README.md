@@ -35,7 +35,7 @@ Thanks to this plugin your trouble is gone as it **scans through all of them and
 
 You can easily find the keyword and open mind map containing it as shown below:
 
-![gif](https://github.com/vyzyv/xmind_searcher/raw/master/xms.gif)
+![gif](https://user-images.githubusercontent.com/20703378/36677183-dc9eaa36-1b0d-11e8-81fa-1ccd13b49981.gif)
 
 - First line: path to the mind map with found keyword
 - Second line: name of the mind map (root)
