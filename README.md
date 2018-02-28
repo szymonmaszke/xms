@@ -22,15 +22,6 @@ xms <keyword> [-c --color] [-k --keep] [--s --secret SECRET]
 ```
 To display help use standard ***-h*** parameter.
 
-# Why?
-
-Let's say the **average mind map** may have around **100-200 branches**. According to standards one **branch** should consist of **1-5 words**.
-
-If you have a lot of mind maps (e.g. 100) **total amount of words will be around 50.000**.
-In such case it's easy to forget where certain important informations are located. 
-
-Thanks to this plugin your trouble is gone as it **scans through all of them and gives you the exact branch and mind map for any sought keyword**.
-
 # Demo
 
 You can easily find the keyword and open mind map containing it as shown below:
@@ -40,6 +31,15 @@ You can easily find the keyword and open mind map containing it as shown below:
 - First line: path to the mind map with found keyword
 - Second line: name of the mind map (root)
 - Following lines: Consecutive branches pointing to keyword
+
+# Why?
+
+Let's say the **average mind map** may have around **100-200 branches**. According to standards one **branch** should consist of **1-5 words**.
+
+If you have a lot of mind maps (e.g. 100) **total amount of words will be around 50.000**.
+In such case it's easy to forget where certain important informations are located. 
+
+Thanks to this plugin your trouble is gone as it **scans through all of them and gives you the exact branch and mind map for any sought keyword**.
 
 # Installation
 
