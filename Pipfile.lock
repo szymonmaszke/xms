@@ -1,0 +1,77 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "948c78730a35626060b5d98a15ed2e36b8e0d287c7b51e444c8a9b9bcc030616"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "3.6.4",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "4.15.3-1-ARCH",
+            "platform_system": "Linux",
+            "platform_version": "#1 SMP PREEMPT Mon Feb 12 23:01:17 UTC 2018",
+            "python_full_version": "3.6.4",
+            "python_version": "3.6",
+            "sys_platform": "linux"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.6"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "mysql-connector-python": {
+            "hashes": [
+                "sha256:0c1c167372692af6153c8d4df2d2d5b292f007149cbbef127e34b7f10bf04847",
+                "sha256:16bc2f36ecdc115c07fd84046df5bc657e23346ca4c22e0b0266f8c64b9491b4",
+                "sha256:2125272c10e380fcf45bd8620e2d1b7ac2b9f27c20ede0e72b45a04c4af60401",
+                "sha256:344a62ab7e72f9d869ee8658fd31ce3907075838fa95a1b64ab5649a039a5a71",
+                "sha256:6db67834edf833c40ff6bc25f20ccf7215f62720f258e2670370099d90e4510c",
+                "sha256:14e9cf1d5cc0be363cad1a1d440f08bc270a5605d7f53110986d10f416eb1a54",
+                "sha256:18a276406d2add95a22f951ba74a7c5b45b893509b5c175acdbb6617700e4325",
+                "sha256:706f39000c1d44f3119c982939e683ec05e24fd5e4f6de81046244f0bc459763",
+                "sha256:3d98e3f5ced7448a3f8235e1dc50c96a15f9e6460c8eb31d7b6f1a8f511913e9",
+                "sha256:e7588a3ee72f2084859e5cca123c183db07a0d5892627b4e3ba1ea0255362017",
+                "sha256:8ff6e5110286d2b1d9b5afcbc1afae1f84c12eba1068824432b9caec34bc8f59",
+                "sha256:5bffd9d76fc7635e9c672351f84b6a57ee425815574c0e97225a0422908d2286",
+                "sha256:64352bf2e4863f3a295b199b72ccfeaa859e33e670665df16370ec5af51d91c4",
+                "sha256:6cc31feb0b5b10fabe42a0509a6ee966408f2236436399a01d9726a9e0b71886",
+                "sha256:a48b6bb37a06875ccf5434cbaf14f87d73e2fe7b9f5931ff5f3d6083172f7570",
+                "sha256:99f3cd6202d9b357e2d4d437b4772029e995a514bc04c44058d4958b7a2548ce",
+                "sha256:11bbcc90186a14a83c4f41344ee34d2cb72f85f73ee3d4b15cd7985af06b7cb9",
+                "sha256:ae510d475dd7f20468d969553c18af6186c39aa1a49cdfbeaaceb8a036e9e77e"
+            ],
+            "version": "==8.0.6"
+        },
+        "pexpect": {
+            "hashes": [
+                "sha256:6ff881b07aff0cb8ec02055670443f784434395f90c3285d2ae470f921ade52a",
+                "sha256:67b85a1565968e3d5b5e7c9283caddc90c3947a2625bed1905be27bd5a03e47d"
+            ],
+            "version": "==4.4.0"
+        },
+        "ptyprocess": {
+            "hashes": [
+                "sha256:e8c43b5eee76b2083a9badde89fd1bbce6c8942d1045146e100b7b5e014f4f1a",
+                "sha256:e64193f0047ad603b71f202332ab5527c5e52aa7c8b609704fc28c0dc20c4365"
+            ],
+            "version": "==0.5.2"
+        },
+        "termcolor": {
+            "hashes": [
+                "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"
+            ],
+            "version": "==1.1.0"
+        }
+    },
+    "develop": {}
+}
