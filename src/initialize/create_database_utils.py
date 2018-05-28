@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""create_database_utils."""
-
-__all__ = ['setup_database', 'setup_procedures']
+"""Utilities used during database creation."""
 
 import time
 
+import mysql.connector as connector
 import pexpect
 
+from utilities import verbose
 
-def setup_database(connection, args):
-    """Creates connection with specified arguments, drops if already exists.
+
+@verbose(in_progress="Creating database...", success="Database created successfully")
+def setup_database(args):
+    """Create connection and setup database.
+
+    If database of this name already exists drop it (if possible).
 
     Parameters
     ----------
-    connection : MYSQL connection object
-           Object describing connection with database
     args : Object returned from ArgumentParser.parse_args()
            Container with arguments specified in :see create_database_utils.py
            Here, database (name of database), it's character set and collation
@@ -27,27 +29,40 @@ def setup_database(connection, args):
          Cursor created from connection
 
     """
+
+    connection = connector.connect(
+        user=args.username, password=args.pwd, host=args.connect, autocommit=True
+    )
+
     cursor = connection.cursor()
 
-    cursor.execute('DROP DATABASE IF EXISTS ' + args.database)
+    cursor.execute("DROP DATABASE IF EXISTS " + args.database)
 
-    cursor.execute('CREATE DATABASE ' + args.database + ' CHARACTER SET ' +
-                   args.char + ' COLLATE ' + args.collation)
+    cursor.execute(
+        "CREATE DATABASE {} CHARACTER SET {} COLLATE {}".format(
+            args.database, args.char, args.collation
+        )
+    )
 
-    cursor.execute('USE ' + args.database)
+    cursor.execute("USE {}".format(args.database))
 
-    cursor.execute('''CREATE TABLE tree (
+    cursor.execute(
+        """CREATE TABLE tree (
                         content_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         content TEXT,
                         lft BIGINT NOT NULL,
                         rgt BIGINT NOT NULL,
                         FULLTEXT(content)
-                    )ENGINE=''' + args.engine)
+                    )ENGINE={}""".format(
+            args.engine
+        )
+    )
     return cursor
 
 
+@verbose(in_progress="Loading procedures...", success="Procedures loaded successfully")
 def setup_procedures(user: str, password: str, connection):
-    """Sources procedures through MySQL connection created as seperate process.
+    """Sources procedures through MySQL connection created as separate process.
 
     IMPORTANT:
     Workaround function, python mysql-connector fails to process procedure loading
@@ -65,13 +80,12 @@ def setup_procedures(user: str, password: str, connection):
     """
     # connect to mysql via separate process (python's mysql-connector not
     # parsing procedures sourcing correctly... :( )
-    with pexpect.spawn('mysql -u ' + user + ' -p') as process:
-        process.expect(r'(Enter.*)')
+    with pexpect.spawn("mysql -u {} -p".format(user)) as process:
+        process.expect(r"(Enter.*)")
         process.sendline(password)
-        process.expect(r'(.*)')
-        process.sendline('USE ' + connection)
-        process.expect(r'(.*)')
-        process.sendline('source ./src/procedures/setup_procedures.sql')
+        process.expect(r"(.*)")
+        process.sendline("USE {}".format(connection))
+        process.expect(r"(.*)")
+        process.sendline("source ./src/procedures/setup_procedures.sql")
         # WORKAROUND, ALLOWS MYSQL TO LOAD PROCEDURES
         time.sleep(2)
-        process.close()
