@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""xms_utilities."""
-
-__all__ = ['find_keyword', 'receive_data']
+"""Utilities used in lookup function."""
 
 import base64
 import os
@@ -48,47 +46,47 @@ def find_keyword(cursor, keyword: str, color: bool, keep: bool):
         if result:
             # Display indent based branches containing sought keyword
             for indent, branch in enumerate(result):
-                print(' ' * indent + '{}'.format(branch[0]))
+                print(" " * indent + "{}".format(branch[0]))
             return result[0][0]
+        text = "No results found, exiting"
+        print(colored(text, "red") if color else text)
+        exit(0)
 
-        return None
+    def maybe_open_mind_map(result):
+        text = "\nOpen mind map? \n[Y] yes [ANY] no "
+        open_decision = input(colored(text, "blue") if color else text)
+        if open_decision.lower() == "y":
+            subprocess.call("XMind '{}' >/dev/null 2>&1 &".format(result), shell=True)
+
+    def maybe_next_result():
+        text = "\nShow next result? \n[Y] yes [ANY] no "
+        next_branch_decision = input(colored(text, "green") if color else text)
+        if next_branch_decision != "y":
+            exit(0)
+
+    def maybe_clear_screen():
+        print()
+        if not keep:
+            os.system("cls" if os.name == "nt" else "clear")
 
     # Fetch the best result from database, than the second one, third one
     # afterwards etc.
     BEST_RESULT_ID = 0
     while True:
-        cursor.callproc('find_node', [keyword, BEST_RESULT_ID])
+        cursor.callproc("find_node", [keyword, BEST_RESULT_ID])
         result = _display_results(cursor)
-        if result is None:
-            text = 'No results found, exiting'
-            print(colored(text, 'red') if color else text)
-            return
-
-        # Open mind map?
-        text = '\nOpen mind map? \n[Y] yes [ANY] no '
-        open_decision = input(colored(text, 'blue') if color else text)
-        if open_decision.lower() == 'y':
-            subprocess.call(
-                "XMind '{}' >/dev/null 2>&1 &".format(result), shell=True)
-
-        # Continue to next mind map?
-        text = '\nShow next result? \n[Y] yes [ANY] no '
-        next_branch_decision = input(colored(text, 'green') if color else text)
-        if next_branch_decision != 'y':
-            return
-
-        print()
-        if not keep:
-            os.system('cls' if os.name == 'nt' else 'clear')
+        maybe_open_mind_map(result)
+        maybe_next_result()
+        maybe_clear_screen()
         BEST_RESULT_ID += 1
 
 
 def receive_data(
-        path: str,
-        error_message: str,
-        not_found_message: str,
-        first_prompt_message: str,
-        second_prompt_message: str,
+    path: str,
+    error_message: str,
+    not_found_message: str,
+    first_prompt_message: str,
+    second_prompt_message: str,
 ):
     """Return data from file in specified directory.
 
@@ -119,9 +117,11 @@ def receive_data(
     # If secret file exists read it
     if secret:
         try:
-            with open(os.path.expanduser(path), 'r') as file:
-                return [(base64.b64decode(data)).decode('utf-8')
-                        for data in file.read().splitlines()]
+            with open(os.path.expanduser(path), "r") as file:
+                return [
+                    (base64.b64decode(data)).decode("utf-8")
+                    for data in file.read().splitlines()
+                ]
         # If something went wrong prompt the user to specify their secret
         except Exception:
             print(error_message)
